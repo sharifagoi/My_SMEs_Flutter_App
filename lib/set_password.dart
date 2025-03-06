@@ -11,8 +11,7 @@ class SetPasswordPage extends StatefulWidget {
 
 class _SetPasswordPageState extends State<SetPasswordPage> {
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController =
-  TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final ApiService _apiService = ApiService();
   bool _passwordVisible = false; // State for password visibility
@@ -21,63 +20,35 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
   Future<void> _setPassword() async {
     if (_formKey.currentState!.validate()) {
       // Retrieve arguments from the previous page
-      final Map<String, dynamic> args =
-      ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
+      final Map<String, dynamic> args = ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
 
       // Access the registration details
-      final String name = args['fullName'];
-      final String phone = args['phone'];
       final String email = args['email'];
-      final String role = args['role'];
       final String password = passwordController.text;
 
       try {
         // Make the API call to set the password
-        final response = await _apiService.postData('users/password', {
+        final response = await _apiService.updateData('users/update-password', {
           "email": email,
           "password": password,
         });
 
-        // Check if the response contains the 'statusCode' key
-        if (response.containsKey('statusCode')) {
-          final statusCode = response['statusCode'] as int;
+        // Check the response message
+        if (response.containsKey('message') && response['message'] == 'Password updated successfully') {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Password set successfully!')),
+            );
+          }
 
-          if (statusCode == 200 || statusCode == 201) {
-            // Show a success message
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Password set successfully!')),
-              );
-            }
-
-            // Use debugPrint for development logging
-            if (kDebugMode) {
-              debugPrint('Name: $name');
-              debugPrint('Phone: $phone');
-              debugPrint('Email: $email');
-              debugPrint('Role: $role');
-              debugPrint('Password: $password');
-            }
-
-            // Navigate to the login page after setting the password
-            if (mounted) {
-              Navigator.pushReplacementNamed(context, '/login');
-            }
-          } else {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        'Set password failed with status code: $statusCode')),
-              );
-            }
+          // Navigate to the login page after setting the password
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/login');
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text(
-                      'Set password failed: Invalid response format')),
+              const SnackBar(content: Text('Set password failed: Invalid response format')),
             );
           }
         }
@@ -85,7 +56,7 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
         // Handle errors
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error set password: $error')),
+            SnackBar(content: Text('Error setting password: $error')),
           );
         }
       }
@@ -114,9 +85,7 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _passwordVisible ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
@@ -145,9 +114,7 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _confirmPasswordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _confirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {

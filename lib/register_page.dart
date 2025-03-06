@@ -28,46 +28,36 @@ class _RegisterPageState extends State<RegisterPage> {
           "role": selectedRole,
         });
 
-        // Check if the response contains the 'statusCode' key
-        if (response.containsKey('statusCode')) {
-          final statusCode = response['statusCode'] as int;
-
-          if (statusCode == 200 || statusCode == 201) {
-            // Show a success message
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('User registered successfully!')),
-              );
-            }
-            // Navigate to Set Password page and pass registration details
-            if (mounted) {
-              Navigator.pushNamed(
-                context,
-                '/set-password',
-                arguments: {
-                  "fullName": nameController.text,
-                  "phone": phoneController.text,
-                  "email": emailController.text,
-                  "role": selectedRole,
-                },
-              );
-            }
-          } else {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        'Registration failed with status code: $statusCode')),
-              );
-            }
+        // Check if the response contains the necessary keys
+        if (response.containsKey('id') &&
+            response.containsKey('fullName') &&
+            response.containsKey('phone') &&
+            response.containsKey('email') &&
+            response.containsKey('role')) {
+          // Show a success message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User registered successfully!')),
+            );
+          }
+          // Navigate to Set Password page and pass registration details
+          if (mounted) {
+            Navigator.pushNamed(
+              context,
+              '/set-password',
+              arguments: {
+                "fullName": response['fullName'],
+                "phone": response['phone'],
+                "email": response['email'],
+                "role": response['role'],
+              },
+            );
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                  content: Text(
-                      'Registration failed: Invalid response format')),
+                  content: Text('Registration failed: Invalid response format')),
             );
           }
         }

@@ -24,55 +24,36 @@ class _LoginPageState extends State<LoginPage> {
           "password": passwordController.text,
         });
 
-        // Check if the response contains the 'statusCode' key
-        if (response.containsKey('statusCode')) {
-          final statusCode = response['statusCode'] as int;
-
-          if (statusCode == 200 || statusCode == 201) {
-            // Show a success message
+        // Check if the response contains the 'id' key
+        if (response.containsKey('id')) {
+          // Show a success message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User login successfully!')),
+            );
+          }
+          // Navigate to the appropriate dashboard based on the role
+          if (response.containsKey('role')) {
+            final role = response['role'] as String;
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content: Text('User login successfully!')),
-              );
-            }
-            // Navigate to the appropriate dashboard based on the role
-            if (response.containsKey('role')) {
-              final role = response['role'] as String;
-              if (mounted) {
-                if (role == 'SYSTEM_ADMINISTRATOR') {
-                  Navigator.pushReplacementNamed(
-                      context, '/system-admin-dashboard');
-                } else if (role == 'SHOP_MANAGER') {
-                  Navigator.pushReplacementNamed(
-                      context, '/shop-manager-dashboard');
-                } else if (role == 'CUSTOMER_ATTENDANT') {
-                  Navigator.pushReplacementNamed(
-                      context, '/customer-attendant-dashboard');
-                } else {
-                  // Handle unknown role
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Unknown user role')),
-                  );
-                }
+              if (role == 'SYSTEM_ADMINISTRATOR') {
+                Navigator.pushReplacementNamed(context, '/system-admin-dashboard');
+              } else if (role == 'SHOP_MANAGER') {
+                Navigator.pushReplacementNamed(context, '/shop-manager-dashboard');
+              } else if (role == 'CUSTOMER_ATTENDANT') {
+                Navigator.pushReplacementNamed(context, '/customer-attendant-dashboard');
+              } else {
+                // Handle unknown role
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Unknown user role')),
+                );
               }
-            }
-          } else {
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        'Login failed with status code: $statusCode')),
-              );
             }
           }
         } else {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                  content: Text(
-                      'Login failed: Invalid response format')),
+              const SnackBar(content: Text('Login failed: Invalid response format')),
             );
           }
         }
@@ -129,9 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
                     icon: Icon(
-                      _passwordVisible
-                          ? Icons.visibility
-                          : Icons.visibility_off,
+                      _passwordVisible ? Icons.visibility : Icons.visibility_off,
                     ),
                     onPressed: () {
                       setState(() {
