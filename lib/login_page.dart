@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smes/service/api_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -26,28 +27,35 @@ class _LoginPageState extends State<LoginPage> {
 
         // Check if the response contains the 'id' key
         if (response.containsKey('id')) {
+          // Save user details in shared preferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setInt('userId', response['id']);
+          await prefs.setString('fullName', response['fullName']);
+          await prefs.setString('phone', response['phone']);
+          await prefs.setString('email', response['email']);
+          await prefs.setString('role', response['role']);
+
           // Show a success message
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('User login successfully!')),
             );
           }
+
           // Navigate to the appropriate dashboard based on the role
-          if (response.containsKey('role')) {
-            final role = response['role'] as String;
-            if (mounted) {
-              if (role == 'SYSTEM_ADMINISTRATOR') {
-                Navigator.pushReplacementNamed(context, '/system-admin-dashboard');
-              } else if (role == 'SHOP_MANAGER') {
-                Navigator.pushReplacementNamed(context, '/shop-manager-dashboard');
-              } else if (role == 'CUSTOMER_ATTENDANT') {
-                Navigator.pushReplacementNamed(context, '/customer-attendant-dashboard');
-              } else {
-                // Handle unknown role
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Unknown user role')),
-                );
-              }
+          final role = response['role'] as String;
+          if (mounted) {
+            if (role == 'SYSTEM_ADMINISTRATOR') {
+              Navigator.pushReplacementNamed(context, '/system-admin-dashboard');
+            } else if (role == 'SHOP_MANAGER') {
+              Navigator.pushReplacementNamed(context, '/shop-manager-dashboard');
+            } else if (role == 'CUSTOMER_ATTENDANT') {
+              Navigator.pushReplacementNamed(context, '/customer-attendant-dashboard');
+            } else {
+              // Handle unknown role
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Unknown user role')),
+              );
             }
           }
         } else {

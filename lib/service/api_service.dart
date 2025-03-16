@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 import 'package:smes/api/api_config.dart';
 
@@ -12,14 +13,16 @@ class ApiService {
       if (response.statusCode == 200) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("GET failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "GET failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("GET error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> postData(String endpoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> postData(
+      String endpoint, Map<String, dynamic> body) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -32,14 +35,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("POST failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "POST failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("POST error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> updateData(String endpoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> updateData(
+      String endpoint, Map<String, dynamic> body) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -52,34 +57,36 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("PUT failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "PUT failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("PUT error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> deleteData(String endpoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> deleteData(String endpoint) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
       final response = await http.delete(
         url,
         headers: {'Content-Type': 'application/json; charset=UTF-8'},
-        body: jsonEncode(body),
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("DELETE failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "DELETE failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("DELETE error: $e");
     }
   }
 
-  Future<List<T>> fetchList<T>(String endpoint, T Function(Map<String, dynamic>) fromJson) async {
+  Future<List<T>> fetchList<T>(
+      String endpoint, T Function(Map<String, dynamic>) fromJson) async {
     try {
       final response = await getData(endpoint);
 
@@ -93,7 +100,8 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> postList<T>(String endpoint, List<T> data, Map<String, dynamic> Function(T) toJson) async {
+  Future<Map<String, dynamic>> postList<T>(String endpoint, List<T> data,
+      Map<String, dynamic> Function(T) toJson) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -106,14 +114,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("POST List failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "POST List failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("POST List error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> putList<T>(String endpoint, List<T> data, Map<String, dynamic> Function(T) toJson) async {
+  Future<Map<String, dynamic>> putList<T>(String endpoint, List<T> data,
+      Map<String, dynamic> Function(T) toJson) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -126,14 +136,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("PUT List failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "PUT List failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("PUT List error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> deleteList<T>(String endpoint, List<T> data, Map<String, dynamic> Function(T) toJson) async {
+  Future<Map<String, dynamic>> deleteList<T>(String endpoint, List<T> data,
+      Map<String, dynamic> Function(T) toJson) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -146,14 +158,16 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("DELETE List failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "DELETE List failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("DELETE List error: $e");
     }
   }
 
-  Future<Map<String, dynamic>> patchData(String endpoint, Map<String, dynamic> body) async {
+  Future<Map<String, dynamic>> patchData(
+      String endpoint, Map<String, dynamic> body) async {
     final url = Uri.parse("$apiBaseUrl/$endpoint");
 
     try {
@@ -166,7 +180,8 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return _parseResponse(response.body);
       } else {
-        throw Exception("PATCH failed: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "PATCH failed: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       throw Exception("PATCH error: $e");
@@ -210,7 +225,8 @@ class ApiService {
     return postData('email/send-otp', {"to": email});
   }
 
-  Future<Map<String, dynamic>> resetPassword(String email, String newPassword) async {
+  Future<Map<String, dynamic>> resetPassword(
+      String email, String newPassword) async {
     return postData('users/reset-password', {
       "email": email,
       "newPassword": newPassword,

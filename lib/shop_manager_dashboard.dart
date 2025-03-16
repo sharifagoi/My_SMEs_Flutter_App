@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:smes/home_page.dart';
-import 'package:smes/product_options_page.dart';
-import 'package:smes/stock_options_page.dart';
-import 'package:smes/login_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smes/business_insight_options_page.dart';
-import 'package:smes/register_attendant_page.dart';
-import 'package:smes/record_sales_options_page.dart';
 import 'package:smes/delete_options_page.dart';
+import 'package:smes/home_page.dart';
+import 'package:smes/login_page.dart';
+import 'package:smes/product_options_page.dart';
+import 'package:smes/record_sales_options_page.dart';
+import 'package:smes/register_attendant_page.dart';
 import 'package:smes/settings_page.dart';
+import 'package:smes/stock_options_page.dart';
 import 'package:smes/update_profile_page.dart'; // Import UpdateProfilePage
 
 class ShopManagerDashboard extends StatefulWidget {
@@ -19,11 +20,68 @@ class ShopManagerDashboard extends StatefulWidget {
 
 class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
   List<Map<String, dynamic>> _stock = [];
+  String? _fullName;
+  String? _phone;
+  String? _email;
+  String? _role;
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetails();
+  }
+
+  void _loadUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _fullName = prefs.getString('fullName');
+      _phone = prefs.getString('phone');
+      _email = prefs.getString('email');
+      _role = prefs.getString('role');
+    });
+  }
 
   void _updateStock(List<Map<String, dynamic>> newStock) {
     setState(() {
       _stock = newStock;
     });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    stock: _stock,
+                  )),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const DeleteOptionsPage()),
+        );
+        break;
+    }
   }
 
   @override
@@ -40,45 +98,14 @@ class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
           ),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.account_circle, size: 60, color: Colors.white),
-                  SizedBox(height: 10),
-                  Text('Manager Name',
-                      style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Text('manager@example.com',
-                      style: TextStyle(color: Colors.white70, fontSize: 14)),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                // Navigate to Home page
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(
-                        stock: _stock,
-                      )),
-                );
-              },
-            ),
-            ListTile(
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Update Profile'),
               onTap: () {
-                // Navigate to Update Profile page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -86,25 +113,26 @@ class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.business),
               title: const Text('Business Insights'),
               onTap: () {
-                // Navigate to Business Insights Options page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const BusinessInsightsOptionsPage()),
+                      builder: (context) =>
+                          const BusinessInsightsOptionsPage()),
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.person_add),
               title: const Text('Register Customer Attendant'),
               onTap: () {
-                // Navigate to Register Customer Attendant page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -112,12 +140,12 @@ class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.point_of_sale),
               title: const Text('Record Sales'),
               onTap: () {
-                // Navigate to Record Sales Options page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -125,12 +153,12 @@ class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.shopping_bag),
               title: const Text('Product'),
               onTap: () {
-                // Navigate to Product Options page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -138,63 +166,60 @@ class _ShopManagerDashboardState extends State<ShopManagerDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.inventory),
               title: const Text('Stock'),
               onTap: () {
-                // Navigate to Stock Options page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => StockOptionsPage(
-                        onStockDataLoaded: _updateStock,
-                      )),
+                      builder: (context) => const StockOptionsPage()),
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                // Navigate to Settings page
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('User Details'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Full Name: ${_fullName ?? 'N/A'}'),
+                  Text('Phone: ${_phone ?? 'N/A'}'),
+                  Text('Email: ${_email ?? 'N/A'}'),
+                  Text('Role: ${_role ?? 'N/A'}'),
+                ],
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.delete),
-              title: const Text('Delete'),
-              onTap: () {
-                // Navigate to Delete Options page
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const DeleteOptionsPage()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                // Navigate to Logout page
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-      body: const Center(
-        child: Text('Shop Manager Dashboard Content'),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delete),
+            label: 'Delete',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }
@@ -212,14 +237,14 @@ class CustomSearchDelegate extends SearchDelegate<String> {
     return ListView(
       children: suggestions
           .where((suggestion) =>
-          suggestion.toLowerCase().contains(query.toLowerCase()))
+              suggestion.toLowerCase().contains(query.toLowerCase()))
           .map((suggestion) => ListTile(
-        title: Text(suggestion),
-        onTap: () {
-          query = suggestion;
-          showResults(context);
-        },
-      ))
+                title: Text(suggestion),
+                onTap: () {
+                  query = suggestion;
+                  showResults(context);
+                },
+              ))
           .toList(),
     );
   }

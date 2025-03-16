@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:smes/login_page.dart';
-import 'package:smes/settings_page.dart';
-import 'package:smes/update_profile_page.dart';
-import 'package:smes/shop_manager_dashboard.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smes/customer_attendant_dashboard.dart'; // Import CustomerAttendantDashboard
 import 'package:smes/home_page.dart'; // Import HomePage
+import 'package:smes/login_page.dart';
+import 'package:smes/settings_page.dart';
+import 'package:smes/shop_manager_dashboard.dart';
+import 'package:smes/update_profile_page.dart';
 
 class SystemAdminDashboard extends StatefulWidget {
   const SystemAdminDashboard({super.key});
@@ -15,6 +16,60 @@ class SystemAdminDashboard extends StatefulWidget {
 
 class _SystemAdminDashboardState extends State<SystemAdminDashboard> {
   final List<Map<String, dynamic>> _stock = []; // Define _stock as final
+  String? _fullName;
+  String? _phone;
+  String? _email;
+  String? _role;
+  int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetails();
+  }
+
+  void _loadUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _fullName = prefs.getString('fullName');
+      _phone = prefs.getString('phone');
+      _email = prefs.getString('email');
+      _role = prefs.getString('role');
+    });
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    switch (index) {
+      case 0:
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                    stock: _stock, // Pass _stock to HomePage
+                  )),
+        );
+        break;
+      case 1:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
+        break;
+      case 2:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+        break;
+      case 3:
+        // Add any additional functionality for delete if needed
+        break;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,45 +77,14 @@ class _SystemAdminDashboardState extends State<SystemAdminDashboard> {
       appBar: AppBar(
         title: const Text('System Admin Dashboard'),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.account_circle, size: 60, color: Colors.white),
-                  SizedBox(height: 10),
-                  Text('Admin Name',
-                      style: TextStyle(color: Colors.white, fontSize: 18)),
-                  Text('admin@example.com',
-                      style: TextStyle(color: Colors.white70, fontSize: 14)),
-                ],
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                // Navigate to Home page
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => HomePage(
-                        stock: _stock, // Pass _stock to HomePage
-                      )),
-                );
-              },
-            ),
-            ListTile(
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.person),
               title: const Text('Update Profile'),
               onTap: () {
-                // Navigate to Update Profile page
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -68,12 +92,12 @@ class _SystemAdminDashboardState extends State<SystemAdminDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.people),
               title: const Text('Manage Shop Managers'),
               onTap: () {
-                // Navigate to Shop Manager Dashboard
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -81,12 +105,12 @@ class _SystemAdminDashboardState extends State<SystemAdminDashboard> {
                 );
               },
             ),
-            ListTile(
+          ),
+          Card(
+            child: ListTile(
               leading: const Icon(Icons.people_alt),
               title: const Text('Manage Customer Attendants'),
               onTap: () {
-                // Navigate to Customer Attendant Dashboard
-                Navigator.pop(context); // Close the drawer
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -94,35 +118,47 @@ class _SystemAdminDashboardState extends State<SystemAdminDashboard> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
-              onTap: () {
-                // Navigate to Settings page
-                Navigator.pop(context); // Close the drawer
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
+          ),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('User Details'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Full Name: ${_fullName ?? 'N/A'}'),
+                  Text('Phone: ${_phone ?? 'N/A'}'),
+                  Text('Email: ${_email ?? 'N/A'}'),
+                  Text('Role: ${_role ?? 'N/A'}'),
+                ],
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text('Logout'),
-              onTap: () {
-                // Navigate to Logout page
-                Navigator.pop(context); // Close the drawer
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
-      body: const Center(
-        child: Text('System Admin Dashboard Content'),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.logout),
+            label: 'Logout',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.delete),
+            label: 'Delete',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.blue,
+        onTap: _onItemTapped,
       ),
     );
   }

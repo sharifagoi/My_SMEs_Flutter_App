@@ -15,7 +15,6 @@ class DeleteOptionsPage extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                // Navigate to Delete User page
                 Navigator.pushNamed(context, '/delete-user');
               },
               child: const Text('Delete User'),
@@ -23,7 +22,6 @@ class DeleteOptionsPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to Delete Product page
                 Navigator.pushNamed(context, '/delete-product');
               },
               child: const Text('Delete Product'),
@@ -31,7 +29,6 @@ class DeleteOptionsPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to Delete Sales page
                 Navigator.pushNamed(context, '/delete-sales');
               },
               child: const Text('Delete Sales'),
@@ -39,7 +36,6 @@ class DeleteOptionsPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Navigate to Delete Stock page
                 Navigator.pushNamed(context, '/delete-stock');
               },
               child: const Text('Delete Stock'),

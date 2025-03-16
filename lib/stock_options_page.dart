@@ -1,34 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:smes/service/api_service.dart';
 
 class StockOptionsPage extends StatefulWidget {
-  final Function(List<Map<String, dynamic>>) onStockDataLoaded;
-
-  const StockOptionsPage({super.key, required this.onStockDataLoaded}); // Corrected: Use super.key
+  const StockOptionsPage({super.key});
 
   @override
   StockOptionsPageState createState() => StockOptionsPageState();
 }
 
 class StockOptionsPageState extends State<StockOptionsPage> {
-  List<Map<String, dynamic>> stock = [
-    {'name': 'Product 1', 'quantity': 10},
-    {'name': 'Product 2', 'quantity': 20},
-    {'name': 'Product 3', 'quantity': 15},
-  ];
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> stock = [];
 
   @override
   void initState() {
     super.initState();
-    // Simulate fetching stock data (replace with your actual data fetching logic)
     _fetchStockData();
   }
 
-  void _fetchStockData() {
-    // Simulate fetching data after a delay
-    Future.delayed(const Duration(seconds: 1), () {
-      // Call the callback with the stock data
-      widget.onStockDataLoaded(stock);
-    });
+  Future<void> _fetchStockData() async {
+    final response = await _apiService.getData('sales/stock');
+    if (response != null) {
+      setState(() {
+        stock = List<Map<String, dynamic>>.from(response);
+      });
+    }
   }
 
   @override

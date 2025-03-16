@@ -1,21 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:smes/add_product_page.dart'; // Import AddProductPage
+import 'package:smes/service/api_service.dart';
 
 class ProductOptionsPage extends StatefulWidget {
   const ProductOptionsPage({super.key});
-
-  // Static list to hold products
-  static final List<Map<String, dynamic>> products = [
-    {'productName': 'Product A', 'price': 10.0, 'expiryDate': '2024-12-31'},
-    {'productName': 'Product B', 'price': 20.0, 'expiryDate': '2025-01-15'},
-    {'productName': 'Product C', 'price': 15.0, 'expiryDate': '2024-11-30'},
-  ];
 
   @override
   State<ProductOptionsPage> createState() => _ProductOptionsPageState();
 }
 
 class _ProductOptionsPageState extends State<ProductOptionsPage> {
+  final ApiService _apiService = ApiService();
+  List<Map<String, dynamic>> _products = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    final response = await _apiService.getData('sales/products');
+    if (response.containsKey('id')) {
+      setState(() {
+        _products = List<Map<String, dynamic>>.from(response);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,11 +35,11 @@ class _ProductOptionsPageState extends State<ProductOptionsPage> {
         title: const Text('Product Options'),
       ),
       body: ListView.builder(
-        itemCount: ProductOptionsPage.products.length,
+        itemCount: _products.length,
         itemBuilder: (context, index) {
-          final product = ProductOptionsPage.products[index];
+          final product = _products[index];
           return ListTile(
-            title: Text(product['productName']),
+            title: Text(product['name']),
             subtitle: Text('Price: \$${product['price']}'),
             trailing: Text('Expiry: ${product['expiryDate']}'),
           );
@@ -39,7 +51,8 @@ class _ProductOptionsPageState extends State<ProductOptionsPage> {
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AddProductPage()),
-          );
+          ).then((_) =>
+              _fetchProducts()); // Refresh products after adding a new one
         },
         child: const Icon(Icons.add),
       ),

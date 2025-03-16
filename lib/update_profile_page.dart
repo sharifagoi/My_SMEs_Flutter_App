@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart'; // Import the logger package
+import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smes/service/api_service.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   const UpdateProfilePage({super.key});
@@ -14,7 +16,76 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
-  final logger = Logger(); // Create a logger instance
+  final logger = Logger();
+  final ApiService _apiService = ApiService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? email = prefs.getString('email');
+    if (email != null) {
+      final response = await _apiService.getData('users/get/$email');
+
+      if (response != null) {
+        if (mounted) {
+          setState(() {
+            _nameController.text = response['fullName'];
+            _emailController.text = response['email'];
+            _phoneController.text = response['phone'];
+            _addressController.text = response['address'];
+          });
+        }
+      }
+    }
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      String name = _nameController.text;
+      String email = _emailController.text;
+      String phone = _phoneController.text;
+      String address = _addressController.text;
+
+      logger.d('Name: $name');
+      logger.i('Email: $email');
+      logger.w('Phone: $phone');
+      logger.e('Address: $address');
+
+      final response = await _apiService.postData('users/update', {
+        'fullName': name,
+        'email': email,
+        'phone': phone,
+        'address': address,
+      });
+
+      if (response.containsKey('id')) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('fullName', name);
+        await prefs.setString('email', email);
+        await prefs.setString('phone', phone);
+        await prefs.setString('address', address);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Profile updated successfully!')),
+          );
+
+          Navigator.pop(context);
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to update profile.')),
+          );
+        }
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -23,34 +94,6 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
     _phoneController.dispose();
     _addressController.dispose();
     super.dispose();
-  }
-
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      // Process the form data
-      String name = _nameController.text;
-      String email = _emailController.text;
-      String phone = _phoneController.text;
-      String address = _addressController.text;
-
-      // Log the data using the logger
-      logger.d('Name: $name'); // Debug log
-      logger.i('Email: $email'); // Info log
-      logger.w('Phone: $phone'); // Warning log
-      logger.e('Address: $address'); // Error log
-
-      // Here you would typically send this data to your backend
-      // or update it in your local storage.
-      // For this example, we'll just show a success message.
-
-      // Show a success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully!')),
-      );
-
-      // Navigate back to the previous page
-      Navigator.pop(context);
-    }
   }
 
   @override
@@ -83,7 +126,6 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  // Basic email validation
                   if (!value.contains('@')) {
                     return 'Please enter a valid email';
                   }

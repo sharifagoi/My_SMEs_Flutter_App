@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smes/product_options_page.dart'; // Import ProductOptionsPage
+import 'package:smes/service/api_service.dart';
 
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
@@ -13,6 +13,7 @@ class _AddProductPageState extends State<AddProductPage> {
   final _productNameController = TextEditingController();
   final _priceController = TextEditingController();
   final _expiryDateController = TextEditingController();
+  final ApiService _apiService = ApiService();
 
   @override
   void dispose() {
@@ -22,22 +23,31 @@ class _AddProductPageState extends State<AddProductPage> {
     super.dispose();
   }
 
-  void _submitForm() {
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      // Process the form data
       String productName = _productNameController.text;
+      
       double price = double.parse(_priceController.text);
       String expiryDate = _expiryDateController.text;
 
-      // Add the new product to the list
-      ProductOptionsPage.products.add({
-        'productName': productName,
-        'price': price,
+      final response = await _apiService.postData('sales/product', {
+        'name': productName,
+        'price': price.toString(),
         'expiryDate': expiryDate,
       });
 
-      // Navigate back to ProductOptionsPage
-      Navigator.pop(context);
+      if (mounted) {
+        if (response.containsKey('id')) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Product added successfully!')),
+          );
+          Navigator.pop(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to add product.')),
+          );
+        }
+      }
     }
   }
 
@@ -63,6 +73,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16.0), // Add spacing
               TextFormField(
                 controller: _priceController,
                 decoration: const InputDecoration(labelText: 'Price'),
@@ -77,6 +88,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
+              const SizedBox(height: 16.0), // Add spacing
               TextFormField(
                 controller: _expiryDateController,
                 decoration: const InputDecoration(labelText: 'Expiry Date'),
@@ -87,7 +99,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   return null;
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 20), // Add spacing
               ElevatedButton(
                 onPressed: _submitForm,
                 child: const Text('Add Product'),

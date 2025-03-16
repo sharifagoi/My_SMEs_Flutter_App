@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:smes/add_new_stock_page.dart';
-import 'package:smes/login_page.dart';
-import 'package:smes/record_sales_options_page.dart';
-import 'package:smes/register_page.dart';
+import 'package:smes/add_product_page.dart';
+import 'package:smes/business_insight_options_page.dart';
+import 'package:smes/customer_attendant_dashboard.dart';
+import 'package:smes/daily_sales_page.dart';
+import 'package:smes/delete_options_page.dart';
+import 'package:smes/delete_product_page.dart';
+import 'package:smes/delete_sales_page.dart';
+import 'package:smes/delete_stock_page.dart';
+import 'package:smes/delete_user_page.dart';
 import 'package:smes/forgot_password_page.dart';
-import 'package:smes/set_password.dart';
+import 'package:smes/home_page.dart';
+import 'package:smes/login_page.dart';
+import 'package:smes/new_sales_page.dart';
 import 'package:smes/otp_page.dart';
+import 'package:smes/product_options_page.dart';
+import 'package:smes/profit_page.dart';
+import 'package:smes/record_sales_options_page.dart';
+import 'package:smes/register_attendant_page.dart';
+import 'package:smes/register_page.dart';
+import 'package:smes/set_password.dart';
+import 'package:smes/settings_page.dart';
 import 'package:smes/shop_manager_dashboard.dart';
 import 'package:smes/system_admin_dashboard.dart';
-import 'package:smes/new_sales_page.dart';
-import 'package:smes/profit_page.dart';
-import 'package:smes/daily_sales_page.dart';
-import 'package:smes/add_product_page.dart';
-import 'package:smes/delete_options_page.dart';
-import 'package:smes/business_insight_options_page.dart';
-import 'package:smes/product_options_page.dart';
-import 'package:smes/register_attendant_page.dart';
-import 'package:smes/home_page.dart';
-import 'package:smes/settings_page.dart';
 import 'package:smes/update_profile_page.dart';
-import 'package:smes/customer_attendant_dashboard.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -69,8 +73,8 @@ class _MyAppState extends State<MyApp> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -82,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                   bodyLarge: TextStyle(fontSize: 16, color: Colors.black),
                   bodyMedium: TextStyle(fontSize: 14, color: Colors.grey),
                   titleLarge:
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
 
                 // Input Field Theme
@@ -128,8 +132,8 @@ class _MyAppState extends State<MyApp> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[700],
                     foregroundColor: Colors.white,
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 20),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -139,7 +143,7 @@ class _MyAppState extends State<MyApp> {
                   bodyLarge: TextStyle(fontSize: 16, color: Colors.white),
                   bodyMedium: TextStyle(fontSize: 14, color: Colors.grey),
                   titleLarge:
-                  TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 inputDecorationTheme: InputDecorationTheme(
                   filled: true,
@@ -172,9 +176,9 @@ class _MyAppState extends State<MyApp> {
                 '/set-password': (context) => const SetPasswordPage(),
                 '/otp': (context) => const OTPPage(),
                 '/shop-manager-dashboard': (context) =>
-                const ShopManagerDashboard(),
+                    const ShopManagerDashboard(),
                 '/system-admin-dashboard': (context) =>
-                const SystemAdminDashboard(),
+                    const SystemAdminDashboard(),
                 '/record-sales': (context) => const RecordSalesOptionsPage(),
                 '/new-sales': (context) => const NewSalesPage(),
                 '/profit': (context) => const ProfitPage(),
@@ -182,16 +186,21 @@ class _MyAppState extends State<MyApp> {
                 '/add-product': (context) => const AddProductPage(),
                 '/delete-options': (context) => const DeleteOptionsPage(),
                 '/business-insights-options': (context) =>
-                const BusinessInsightsOptionsPage(),
+                    const BusinessInsightsOptionsPage(),
                 '/product-options': (context) => const ProductOptionsPage(),
                 '/register-attendant': (context) =>
-                const RegisterAttendantPage(),
+                    const RegisterAttendantPage(),
                 '/home': (context) => HomePage(stock: const []),
                 '/add-new-stock': (context) =>
                     AddNewStockPage(onStockItemAdded: (item) {}),
                 '/settings': (context) => const SettingsPage(),
                 '/update-profile': (context) => const UpdateProfilePage(),
-                '/customer-attendant-dashboard': (context) => const CustomerAttendantDashboard(),
+                '/customer-attendant-dashboard': (context) =>
+                    const CustomerAttendantDashboard(),
+                '/delete-user': (context) => const DeleteUserPage(),
+                '/delete-product': (context) => const DeleteProductPage(),
+                '/delete-sales': (context) => const DeleteSalesPage(),
+                '/delete-stock': (context) => const DeleteStockPage(),
               },
             ),
           );
