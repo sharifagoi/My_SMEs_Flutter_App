@@ -49,11 +49,13 @@ class _NewSalesPageState extends State<NewSalesPage> {
         'date': date,
       });
 
+      if (!mounted) return;
+
       if (response.containsKey('id')) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Sales recorded successfully!')),
         );
-        Navigator.pop(context);
+        _fetchLatestSales();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to record sales.')),
@@ -82,7 +84,7 @@ class _NewSalesPageState extends State<NewSalesPage> {
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
-          child: ListView(
+          child: Column(
             children: [
               TextFormField(
                 controller: _nameController,
@@ -142,16 +144,41 @@ class _NewSalesPageState extends State<NewSalesPage> {
               const SizedBox(height: 20),
               const Text('Latest Sales',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: _latestSales.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(_latestSales[index]['name']),
-                    subtitle: Text(
-                        'Quantity: ${_latestSales[index]['quantity']}, Total: ${_latestSales[index]['total']}'),
-                  );
-                },
+              Expanded(
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 2,
+                  ),
+                  itemCount: _latestSales.length,
+                  itemBuilder: (context, index) {
+                    final sale = _latestSales[index];
+                    return Card(
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              sale['name'],
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Text('Qty: ${sale['quantity']}'),
+                            Text('Total: \$${sale['total']}'),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ],
           ),

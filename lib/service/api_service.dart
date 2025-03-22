@@ -233,6 +233,27 @@ class ApiService {
     });
   }
 
+  Future<List<dynamic>> getLatestSales(Map<String, dynamic> salesDto) async {
+    final url = Uri.parse("$apiBaseUrl/sales/latest");
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json; charset=UTF-8'},
+        body: jsonEncode(salesDto),
+      );
+
+      if (response.statusCode == 200) {
+        return _parseResponse(response.body);
+      } else {
+        throw Exception(
+            "POST failed: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      throw Exception("POST error: $e");
+    }
+  }
+
   dynamic _parseResponse(String responseBody) {
     final parsed = jsonDecode(responseBody);
     if (parsed is Map<String, dynamic>) {

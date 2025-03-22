@@ -19,7 +19,7 @@ class _DailySalesPageState extends State<DailySalesPage> {
   }
 
   Future<void> _fetchDailySales() async {
-    final response = await _apiService.getData('sales/daily');
+    final response = await _apiService.getData('sales/record');
     if (response.containsKey('id')) {
       setState(() {
         _dailySales = response;
